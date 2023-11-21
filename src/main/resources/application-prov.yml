@@ -1,0 +1,54 @@
+# DataSource Config
+spring:
+  application:
+    name: ware-jwt-token
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sdms?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: oneinstack
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+  data:
+    neo4j:
+      uri: bolt://localhost:7687
+      username: neo4j
+      password: neo4j
+  main:
+    allow-bean-definition-overriding: true
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**Mapper.xml
+
+server:
+  port: 8081
+
+
+# 文件存放位置
+filepath:
+  txt:
+    domain: http://81.70.250.69:8081
+    path: /usr/local/txt/
+    prefix: /statics
+  pdf:
+    domain: http://81.70.250.69:8081
+    path: /usr/local/upload
+    prefix: /statics
+  graph:
+    domain: http://81.70.250.69:8081
+    path: /usr/local/temp/
+    prefix: /statics
+  py:
+    domain: http://81.70.250.69:8081
+    path: /root/workspace/tika.py
+    prefix: /statics
+
+  image:
+    domain: http://81.70.250.69:8081
+    path: /usr/local/images
+    prefix: /statics
+
