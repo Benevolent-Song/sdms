@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class ImageService {
 
     private static final String ES_INDEX = "images";
-    @Value("${filepath.image.path}")
+    @Value("D:/广电文献管理系统/数据和操作步骤/images")
     private String imagePath;
     @Autowired
     private RestHighLevelClient restHighLevelClient;
