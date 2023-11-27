@@ -33,13 +33,13 @@ filepath:
   py:
     path: D:/广电文献管理系统/数据和操作步骤/tika.py
   txt:
-    path: D:/uploadFile/txt/
+    path: D:/广电文献管理系统/数据和操作步骤/txt/
   pdf:
     path: D:/广电文献管理系统/数据和操作步骤/upload
   image:
     path: D:/广电文献管理系统/数据和操作步骤/images
   graph:
-    path: E:/data/file/
+    path: D:/广电文献管理系统/数据和操作步骤/data/file/
 
 
 

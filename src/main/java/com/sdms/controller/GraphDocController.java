@@ -93,7 +93,6 @@ public class GraphDocController {
         if (res.contains("error")) {
             return Result.fail(res);
         }
-
         documentService.parseJsonFile(fileHandler.parseJson(res));
 
         return Result.success("导入成功");

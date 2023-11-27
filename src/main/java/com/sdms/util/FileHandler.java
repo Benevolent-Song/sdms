@@ -71,9 +71,7 @@ public class FileHandler {
                 }
             }
         }
-
         String jsonString = lastStr.toString();
-
         return JSONObject.parseArray(jsonString);
     }
 
