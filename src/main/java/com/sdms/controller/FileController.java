@@ -52,7 +52,7 @@ public class FileController {
         if (!suffixName.equals(".pdf")) {
             return Result.fail("文件类型不符!");
         }
-
+        pid=pdfToJsonUtil.getUUID();//生成uuid(自己后面添加的)
         String newName = pid + ".pdf";
         String pathName = uploadFilePath + "/" + newName;
         File fileTempObj = new File(pathName);
@@ -67,7 +67,7 @@ public class FileController {
 
         try {
             // 写入文件:方式1
-            // file.transferTo(fileTempObj);
+            //file.transferTo(fileTempObj);
             // 写入文件:方式2
             FileUtil.writeBytes(file.getBytes(), fileTempObj);
         } catch (Exception e) {

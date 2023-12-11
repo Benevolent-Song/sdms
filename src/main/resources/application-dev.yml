@@ -28,18 +28,18 @@ mybatis-plus:
 server:
   port: 8081
 
-# 文件存放位置
+# 文件存放位置(一定不能包含中文,会报错)
 filepath:
   py:
-    path: D:/广电文献管理系统/数据和操作步骤/tika.py
+    path: D:/data/result/tika.py
   txt:
-    path: D:/广电文献管理系统/数据和操作步骤/txt/
+    path: D:/data/result/upload/text/
   pdf:
-    path: D:/广电文献管理系统/数据和操作步骤/upload
+    path: D:/data//result/upload
   image:
-    path: D:/广电文献管理系统/数据和操作步骤/images
+    path: D:/data/result/images
   graph:
-    path: D:/广电文献管理系统/数据和操作步骤/data/file/
+    path: D:/data/result/temp/
 
 
 

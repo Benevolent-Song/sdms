@@ -15,7 +15,8 @@ public class FileHandler {
     @Value("${filepath.graph.path}")
     private String fileTempPath;
 
-    public String reserveFile(MultipartFile file) {
+    public String reserveFile(MultipartFile file) //reserve:保留
+    {
 
         if (file.isEmpty()) {
             return "error,空文件！";
@@ -46,7 +47,8 @@ public class FileHandler {
     }
 
 
-    public JSONArray parseJson(String fileName) {
+    public JSONArray parseJson(String fileName)//parse:分析
+    {
 
         BufferedReader reader = null;
         StringBuilder lastStr = new StringBuilder();
