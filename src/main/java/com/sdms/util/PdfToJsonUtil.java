@@ -81,7 +81,6 @@ public class PdfToJsonUtil {
 
         // 删除.txt临时文件
         //FileSystemUtils.deleteRecursively(new File(txtPath));
-
         return JSONObject.parseObject(newString);
     }
 

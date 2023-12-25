@@ -35,7 +35,7 @@ filepath:
   txt:
     path: D:/data/result/upload/text/
   pdf:
-    path: D:/data//result/upload
+    path: D:/data/result/upload
   image:
     path: D:/data/result/images
   graph:

@@ -29,6 +29,8 @@ public class EsDocController {
     public Result parse(@RequestParam("file") MultipartFile file) throws IOException {
         String pid = pdfToJsonUtil.getUUID();
         JSONObject object = pdfToJsonUtil.parseJson(file);
+        System.err.println("pid:"+pid);
+        System.err.println("object:"+object);
         if (documentsService.save(pdfToJsonUtil.createDocument(object, pid))) {
             if (esService.parseObject(object, pid)) {
                 return Result.success("解析json文件成功！pid:" + pid);

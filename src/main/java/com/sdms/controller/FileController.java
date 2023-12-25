@@ -1,6 +1,5 @@
 package com.sdms.controller;
 
-
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.sdms.common.lang.Result;
@@ -11,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+
+import static com.sdms.controller.FileToMultipartFileConverter.convertFileToMultipartFile;
 
 /**
  * <p>
@@ -36,6 +37,9 @@ public class FileController {
     private EsService esService;
     @Autowired
     private PdfToJsonUtil pdfToJsonUtil;
+
+    @Autowired
+    private DocumentsService doc;
 
 
     @PostMapping("/uploadFile/{pid}")
@@ -69,19 +73,26 @@ public class FileController {
             // 写入文件:方式1
             //file.transferTo(fileTempObj);
             // 写入文件:方式2
-            FileUtil.writeBytes(file.getBytes(), fileTempObj);
+             FileUtil.writeBytes(file.getBytes(), fileTempObj);
         } catch (Exception e) {
             log.error("发生错误: {}", e);
             return Result.fail(e.getMessage());
         }
 
-        // 解析pdf
-        JSONObject obj = pdfToJsonUtil.parsePdf(pathName, pid);
-        // 写入es
-        if (esService.parseObject(obj, pid)) {
-            return Result.success("文件解析成功！");
+        //实现直接上传文件的功能
+        JSONObject obj = pdfToJsonUtil.parsePdf(pathName, pid);//将pdf转换为json格式
+        String fileName1=uploadFilePath+"/text/"+pid+".txt";//要保存的文件路径
+        writeDataToFile(obj, fileName1);//将json文件写入文件
+        File objs = new File(fileName1);//读取文件
+        MultipartFile multipartFile = convertFileToMultipartFile(objs);//将文件转换为MultipartFile格式
+        JSONObject object = pdfToJsonUtil.parseJson(multipartFile);//解析json格式文件
+        if (doc.save(pdfToJsonUtil.createDocument(object, pid))) //写入mysql中
+        {
+            if (esService.parseObject(object, pid))//写入es中
+            {
+                return Result.success("解析文件成功！pid:" + pid);
+            }
         }
-
         return Result.fail("文件解析失败！");
     }
 
@@ -195,7 +206,6 @@ public class FileController {
     @PostMapping("/deleteFile")
     public String deleteFile(HttpServletResponse response, @RequestParam("fileName") String fileName) throws JSONException {
         JSONObject result = new JSONObject();
-
         File file = new File(uploadFilePath + '/' + fileName);
         // 判断文件不为null或文件目录存在
         if (!file.exists()) {
@@ -219,5 +229,30 @@ public class FileController {
         result.put("success", "删除成功!");
         return result.toString();
     }
+    private static void writeDataToFile(JSONObject data, String filePath) throws IOException {
+        FileWriter writer = new FileWriter(filePath);
+        try {
+            writer.write(String.valueOf(data));
+        } finally {
+            // 确保关闭写入流
+            if (writer != null) {
+                writer.close();
+            }
+        }
+    }
 
 }
+class FileToMultipartFileConverter {
+
+    public static MultipartFile convertFileToMultipartFile(File file) throws IOException {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            return new MockMultipartFile(
+                    file.getName(),
+                    file.getName(),
+                    "application/octet-stream",
+                    fileInputStream
+            );
+        }
+    }
+}
+

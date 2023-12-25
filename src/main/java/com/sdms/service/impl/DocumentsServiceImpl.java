@@ -129,7 +129,7 @@ public class DocumentsServiceImpl extends ServiceImpl<DocumentsMapper, Documents
             doc.setId(obj.getInteger("id"));
             doc.setPid(obj.getString("pid"));
             doc.setCategory(obj.getString("category"));
-            doc.setNumber(obj.getString("number"));
+            doc.setNumber(obj.getString("pid"));
             doc.setTitleCn(obj.getString("titleCn"));
             doc.setTitleEn(obj.getString("titleEn"));
             doc.setIssuedBy(obj.getString("issuedBy"));

@@ -111,6 +111,8 @@ public class DocumentsController {
 
         JSONObject object = pdfToJsonUtil.parseJson(file);
         ArrayList<Documents> list = documentsService.parseObject(object);
+        //System.err.println("file:"+file);
+        //System.err.println("object:"+object);
         if(documentsService.saveBatch(list)) {
             return Result.success("添加成功");
         }
