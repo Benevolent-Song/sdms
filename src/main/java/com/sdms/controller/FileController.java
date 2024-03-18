@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-
 import static com.sdms.controller.FileToMultipartFileConverter.convertFileToMultipartFile;
 
 /**
@@ -69,10 +68,11 @@ public class FileController {
             return Result.fail("文件已经存在!");
         }
 
-        try {
-            // 写入文件:方式1
-            //file.transferTo(fileTempObj);
-            // 写入文件:方式2
+        try
+        {
+             // 写入文件:方式1
+             //file.transferTo(fileTempObj);
+             // 写入文件:方式2
              FileUtil.writeBytes(file.getBytes(), fileTempObj);
         } catch (Exception e) {
             log.error("发生错误: {}", e);
@@ -82,7 +82,7 @@ public class FileController {
         //实现直接上传文件的功能
         JSONObject obj = pdfToJsonUtil.parsePdf(pathName, pid);//将pdf转换为json格式
         String fileName1=uploadFilePath+"/text/"+pid+".txt";//要保存的文件路径
-        writeDataToFile(obj, fileName1);//将json文件写入文件
+        writeDataToFile(obj, fileName1);//将json数据写入到指定的text文件中
         File objs = new File(fileName1);//读取文件
         MultipartFile multipartFile = convertFileToMultipartFile(objs);//将文件转换为MultipartFile格式
         JSONObject object = pdfToJsonUtil.parseJson(multipartFile);//解析json格式文件

@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "sdms", type = "_doc")
+@Document(indexName = "sdms", type = "_doc")//实体将被映射到名为 "sdms" 的Elasticsearch索引，并且在该索引中的文档将标记为类型 "_doc"。
 public class EsDoc implements Serializable {
 
     private static final long serialVersionUID = 1L;

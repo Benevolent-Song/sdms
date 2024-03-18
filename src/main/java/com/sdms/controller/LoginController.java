@@ -35,11 +35,12 @@ public class LoginController {
     public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) throws UnsupportedEncodingException {
         User user = userService.getUser(loginDto.getUsername());
         Assert.notNull(user, "用户不存在");
-        if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))) {
+        if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword())))
+        {
             return Result.fail("密码错误！");
         }
-        String jwt = JwtUtils.createToken(user);
-        response.setHeader("Authorization", jwt);
+        String jwt = JwtUtils.createToken(user);//创建jwt令牌
+        response.setHeader("Authorization", jwt);//将jwt令牌放到服务器的响应中
         response.setHeader("Access-control-Expose-Headers", "Authorization");
         // 用户可以另一个接口
         return Result.success(

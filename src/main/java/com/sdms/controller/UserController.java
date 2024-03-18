@@ -9,10 +9,7 @@ import com.sdms.common.lang.Result;
 import com.sdms.entity.Documents;
 import com.sdms.entity.User;
 import com.sdms.service.UserService;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;

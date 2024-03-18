@@ -9,7 +9,6 @@ import com.sdms.entity.EsDoc;
 import com.sdms.common.dto.QueryForm;
 import com.sdms.mapper.DocumentsMapper;
 import com.sdms.util.PdfToJsonUtil;
-import com.sdms.util.SortChapterUtil;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -58,7 +57,7 @@ public class EsService {
 
         ArrayList<String> pids = documentsService.searchByType(queryForm.getType(), queryForm.getDate());
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("pid", pids));
-
+        //es构造器BoolQueryBuilder,为es提供相当于mybaits对于mysql的作用。
         ArrayList<HashMap<String, String>> keywords = queryForm.getKeywords();
 
         if(!keywords.isEmpty()) {
@@ -76,13 +75,13 @@ public class EsService {
                             queryBuilder.should(QueryBuilders.matchQuery("text", keyword.get("text")));
                         }else {
                             queryBuilder.should(QueryBuilders.matchPhraseQuery("text", keyword.get("text")).slop(5).analyzer("ik_max_word"));
+                            //搜索文档中字段 "text" 中包含与指定短语匹配的文本，并且允许这些短语中的词之间最多有5个其他词。同时，使用 IK 分析器来处理文本。
+                            //must相当于and,should相当于or
                         }
                     }
                 }
-
             }
         }
-
         return doSearch(queryBuilder, pageIndex, pageSize);
     }
 
@@ -96,15 +95,14 @@ public class EsService {
     }
 
     public Map<String,Object> matchQuery(String keyword, Integer pageIndex, Integer pageSize) throws IOException {
-
         QueryBuilder matchQueryBuilder = QueryBuilders.multiMatchQuery(keyword,"text");
         return doSearch(matchQueryBuilder, pageIndex, pageSize);
     }
 
-    // 高亮查询
+    // ！！！！高亮查询,上面的方法都调用了它作为返回结果
     public Map<String,Object> doSearch(QueryBuilder q, Integer pageIndex, Integer pageSize) throws IOException {
 
-        SearchRequest sdms = new SearchRequest(ES_INDEX);
+        SearchRequest sdms = new SearchRequest(ES_INDEX);//构建SearchRequest请求对象，指定索引库
         // 创建搜索源建造者对象
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // 显示真实返回条数
@@ -193,7 +191,6 @@ public class EsService {
             doc.setPage(obj.getString("page"));
             doc.setText(obj.getString("text"));
             doc.setId(pid + (i + 1));
-
             list.add(doc);
         }
 //        System.out.println(array.size());
@@ -209,6 +206,7 @@ public class EsService {
                             .source(JSON.toJSONString(list.get(i)),XContentType.JSON)
             );
         }
+        //批量处理BulkRequest，其本质就是将多个普通的CRUD请求组合在一起发送。
         BulkResponse bulk = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
         // System.out.println(bulk.getTook());
 
@@ -217,7 +215,7 @@ public class EsService {
 
     public Boolean addEsDoc(EsDoc esDoc) throws IOException {
 
-        IndexRequest request = new IndexRequest(ES_INDEX);
+        IndexRequest request = new IndexRequest(ES_INDEX);//构建SearchRequest请求对象，指定索引库
         esDoc.setId(pdfToJsonUtil.getUUID());
         request.id(esDoc.getId());
         request.timeout("1s");
@@ -279,7 +277,7 @@ public class EsService {
     // 根据pid批量删除对应文件所有的文档
     public Boolean deleteBatch(String pid) throws IOException {
         // 1.创建查询请求对象
-        SearchRequest searchRequest = new SearchRequest(ES_INDEX);
+        SearchRequest searchRequest = new SearchRequest(ES_INDEX);//构建SearchRequest请求对象，指定索引库
         // 2.构建搜索条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // 匹配查询

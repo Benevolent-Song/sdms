@@ -1,6 +1,4 @@
 package com.sdms.controller;
-
-
 import com.alibaba.fastjson.JSONObject;
 import com.sdms.common.lang.Result;
 import com.sdms.entity.EsDoc;
@@ -11,9 +9,7 @@ import com.sdms.util.PdfToJsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.*;
-
 
 @RestController
 @RequestMapping("/es")
@@ -29,8 +25,6 @@ public class EsDocController {
     public Result parse(@RequestParam("file") MultipartFile file) throws IOException {
         String pid = pdfToJsonUtil.getUUID();
         JSONObject object = pdfToJsonUtil.parseJson(file);
-        System.err.println("pid:"+pid);
-        System.err.println("object:"+object);
         if (documentsService.save(pdfToJsonUtil.createDocument(object, pid))) {
             if (esService.parseObject(object, pid)) {
                 return Result.success("解析json文件成功！pid:" + pid);

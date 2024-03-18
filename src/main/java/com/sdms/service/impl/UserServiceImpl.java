@@ -1,6 +1,5 @@
 package com.sdms.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sdms.entity.User;
 import com.sdms.mapper.UserMapper;

@@ -36,7 +36,7 @@ public class PdfToJsonUtil {
     @Value("${filepath.py.path}")
     private String py;
     @Value("${filepath.txt.path}")
-    private String txt;
+    private String txt;//存放临时文件
 
     // 随机产生一串id
     public String getUUID() {
@@ -47,7 +47,6 @@ public class PdfToJsonUtil {
 
     // 解析pdf，返回一个json对象
     public JSONObject parsePdf(String pdfPath, String pdfName) throws UnsupportedEncodingException {
-
         String txtPath = txt + pdfName + ".txt";
         try {
 
@@ -80,7 +79,7 @@ public class PdfToJsonUtil {
         String newString = URLDecoder.decode(jsonString, "UTF-8");
 
         // 删除.txt临时文件
-        //FileSystemUtils.deleteRecursively(new File(txtPath));
+        FileSystemUtils.deleteRecursively(new File(txtPath));
         return JSONObject.parseObject(newString);
     }
 

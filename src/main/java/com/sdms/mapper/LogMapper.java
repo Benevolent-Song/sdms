@@ -1,7 +1,8 @@
 package com.sdms.mapper;
 
-import com.sdms.entity.Documents;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sdms.entity.Logs;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -13,6 +14,6 @@ import org.springframework.stereotype.Repository;
  * @since 2022-04-25
  */
 @Repository
-public interface DocumentsMapper extends BaseMapper<Documents> {
+public interface LogMapper extends BaseMapper<Logs> {
 
 }
