@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 
 @RestController
@@ -32,13 +33,14 @@ public class LoginController {
      */
     @CrossOrigin
     @PostMapping("/login")
-    public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) throws UnsupportedEncodingException {
+    public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response, HttpSession session) throws UnsupportedEncodingException {
         User user = userService.getUser(loginDto.getUsername());
         Assert.notNull(user, "用户不存在");
         if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword())))
         {
             return Result.fail("密码错误！");
         }
+        session.setAttribute("username",user.getUsername());
         String jwt = JwtUtils.createToken(user);//创建jwt令牌
         response.setHeader("Authorization", jwt);//将jwt令牌放到服务器的响应中
         response.setHeader("Access-control-Expose-Headers", "Authorization");

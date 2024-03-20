@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdms.common.dto.QueryForm;
 import com.sdms.common.lang.Result;
 import com.sdms.entity.Documents;
+import com.sdms.entity.Logs;
 import com.sdms.service.DocumentsService;
 import com.sdms.service.EsService;
+import com.sdms.service.LogService;
 import com.sdms.util.PdfToJsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +17,16 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -38,6 +47,8 @@ public class DocumentsController {
     private DocumentsService documentsService;
     @Autowired
     private EsService esService;
+    @Autowired
+    private LogService logService;
     @Autowired
     private PdfToJsonUtil pdfToJsonUtil;
 
@@ -81,6 +92,17 @@ public class DocumentsController {
     @PostMapping("/update")
     public Result updateDocument(@RequestBody Documents document) {
         if (documentsService.updateById(document)) {
+            Logs logs=new Logs();
+            LocalDateTime now = LocalDateTime.now();//获取当前时间
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");//定义日期时间格式
+            String currentDateTime = now.format(formatter); //使用格式化器格式化日期时间
+            logs.setDotime(currentDateTime);
+            logs.setTitleCn(document.getTitleCn());
+            logs.setNumber(document.getNumber());
+            logs.setDoclass("更改文档数据");
+            logs.setPeople("");//人员
+            //logs.setWhatdo("");//操作的内容
+            logService.saveOrUpdate(logs);
             return Result.success("修改成功");
         }
         return Result.fail("修改失败");
@@ -96,6 +118,17 @@ public class DocumentsController {
         FileSystemUtils.deleteRecursively(new File(path));
 
         if (esService.deleteBatch(fileName)) {
+            LocalDateTime now = LocalDateTime.now();//获取当前时间
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");//定义日期时间格式
+            String currentDateTime = now.format(formatter); //使用格式化器格式化日期时间
+            Logs logs=new Logs();
+            logs.setDotime(currentDateTime);
+            logs.setTitleCn(doc.getTitleCn());
+            logs.setNumber(doc.getNumber());
+            logs.setDoclass("删除文档");
+            logs.setPeople("");//人员
+            //logs.setWhatdo("");//操作的内容
+            logService.saveOrUpdate(logs);
             return Result.success("删除成功");
         }
         return Result.fail("删除失败");
