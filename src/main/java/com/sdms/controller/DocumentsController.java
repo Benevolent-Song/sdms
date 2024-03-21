@@ -16,18 +16,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
+
 
 /**
  * <p>
@@ -81,7 +78,6 @@ public class DocumentsController {
                 queryWrapper.and(wrapper -> wrapper.like("number", keyword)
                         .or(wrapper1 -> wrapper1.like("titleCn", arr[0]).like("titleCn", arr[1])));
             }
-
         }
         queryWrapper.orderByDesc("releaseDate");
 
@@ -89,8 +85,11 @@ public class DocumentsController {
         return Result.success(pageData);
     }
 
+    @CrossOrigin
     @PostMapping("/update")
-    public Result updateDocument(@RequestBody Documents document) {
+    public Result updateDocument(@RequestBody Documents document,HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        System.err.println(cookies);
         if (documentsService.updateById(document)) {
             Logs logs=new Logs();
             LocalDateTime now = LocalDateTime.now();//获取当前时间
@@ -99,8 +98,8 @@ public class DocumentsController {
             logs.setDotime(currentDateTime);
             logs.setTitleCn(document.getTitleCn());
             logs.setNumber(document.getNumber());
-            logs.setDoclass("更改文档数据");
-            logs.setPeople("");//人员
+            logs.setDoclass("更改文档");
+            logs.setPeople("root");//人员
             //logs.setWhatdo("");//操作的内容
             logService.saveOrUpdate(logs);
             return Result.success("修改成功");
@@ -126,7 +125,7 @@ public class DocumentsController {
             logs.setTitleCn(doc.getTitleCn());
             logs.setNumber(doc.getNumber());
             logs.setDoclass("删除文档");
-            logs.setPeople("");//人员
+            logs.setPeople("root");//人员
             //logs.setWhatdo("");//操作的内容
             logService.saveOrUpdate(logs);
             return Result.success("删除成功");

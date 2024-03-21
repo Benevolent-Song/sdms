@@ -14,9 +14,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 
 @RestController
@@ -31,16 +29,16 @@ public class LoginController {
      * 默认账号密码：root / 111111
      *
      */
+    //处理跨域请求
     @CrossOrigin
     @PostMapping("/login")
-    public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response, HttpSession session) throws UnsupportedEncodingException {
-        User user = userService.getUser(loginDto.getUsername());
+    public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) throws UnsupportedEncodingException {
+        User user = userService.getUser(loginDto.getUsername());//@Validated对数据进行要求核对,要求在LoginDto类中参数的注解@NotBlank(message = "密码不能为空")上
         Assert.notNull(user, "用户不存在");
         if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword())))
         {
             return Result.fail("密码错误！");
         }
-        session.setAttribute("username",user.getUsername());
         String jwt = JwtUtils.createToken(user);//创建jwt令牌
         response.setHeader("Authorization", jwt);//将jwt令牌放到服务器的响应中
         response.setHeader("Access-control-Expose-Headers", "Authorization");

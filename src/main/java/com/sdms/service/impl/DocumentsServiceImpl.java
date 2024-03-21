@@ -27,6 +27,8 @@ public class DocumentsServiceImpl extends ServiceImpl<DocumentsMapper, Documents
     @Autowired
     private DocumentsMapper documentsMapper;
 
+
+    //根据分类进行查找,通过勾选框的选项
     public QueryWrapper<Documents> makeQuery(HashMap<String, ArrayList<String>> queryParams, ArrayList<String> date) {
 
         ArrayList<String> category = queryParams.get("category");

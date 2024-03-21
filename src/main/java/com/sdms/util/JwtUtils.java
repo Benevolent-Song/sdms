@@ -12,7 +12,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 public class JwtUtils {
     //token有效时长
     private static final long EXPIRE=12*60*60*1000L;
@@ -61,5 +63,19 @@ public class JwtUtils {
             return null;
         }
 
+    }
+
+    private static final String SECRET_KEY = "jwt+shiro"; // 密钥，需与JWT令牌的签名密钥一致
+
+    public static String getUsernameFromToken(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Claims body = claimsJws.getBody();
+            return body.getSubject(); // 获取用户名信息
+        } catch (Exception e) {
+            // 处理异常，比如令牌无效或过期等情况
+            e.printStackTrace();
+            return null;
+        }
     }
 }
