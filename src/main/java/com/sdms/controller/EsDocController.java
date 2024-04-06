@@ -21,19 +21,17 @@ public class EsDocController {
     @Autowired
     private DocumentsService documentsService;
 
-    @PostMapping("/json")
+    @PostMapping("/json")//上传导出的json文件,
     public Result parse(@RequestParam("file") MultipartFile file) throws IOException {
-        String pid = pdfToJsonUtil.getUUID();
-        JSONObject object = pdfToJsonUtil.parseJson(file);
-        if (documentsService.save(pdfToJsonUtil.createDocument(object, pid))) {
-            if (esService.parseObject(object, pid)) {
-                return Result.success("解析json文件成功！pid:" + pid);
-            }
-        }
+
+            JSONObject object = pdfToJsonUtil.parseJson(file);
+            if (esService.parsemyjson(object))//解析json对象,将文本根据chapter分成一段段,最后一次性提交
+            {return Result.success("解析json文件成功！");}
+
         return Result.fail("解析json文件失败！");
     }
 
-    @PostMapping("/select/{pageIndex}/{pageSize}")
+    @PostMapping("/select/{pageIndex}/{pageSize}")//根据请求条件查询es
     public Result selectListByType(@RequestBody QueryForm queryForm,
                                    @PathVariable("pageIndex") Integer pageIndex,
                                    @PathVariable("pageSize") Integer pageSize) throws IOException {
@@ -41,13 +39,12 @@ public class EsDocController {
     }
 
 
-    @GetMapping("/selectList/{pid}")
+    @GetMapping("/selectList/{pid}")//请求查看一篇文章的所有段落,根据pid在es中查找,相同pid是同一个文章
     public Result selectList(@PathVariable("pid") String pid) throws IOException {
-
-        return Result.success(esService.selectList(pid));
+        return Result.success(esService.selectList(pid));//返回的是多条pid相同的文段段落,但它们的id名不相同
     }
 
-    @GetMapping("/search/{keyword}/{pageIndex}/{pageSize}")
+    @GetMapping("/search/{keyword}/{pageIndex}/{pageSize}")//多条件查询
     public Result highlightParse(@PathVariable("keyword") String keyword,
                                            @PathVariable("pageIndex") Integer pageIndex,
                                            @PathVariable("pageSize") Integer pageSize) throws IOException {
@@ -80,7 +77,7 @@ public class EsDocController {
         return Result.fail("添加失败");
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update")//更改段落的内容
     public Result updateEsDoc(@RequestBody EsDoc esDoc) throws IOException {
         if(esService.updateEsDoc(esDoc)) {
             return Result.success("更新成功");

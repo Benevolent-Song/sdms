@@ -47,7 +47,7 @@ public class ImageController {
         if(imageService.downloadFile(response, filePath)) {
             return Result.success("done!");
         }
-        return Result.fail("fail");
+        return Result.fail("failed");
     }
 
 }

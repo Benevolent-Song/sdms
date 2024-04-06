@@ -68,7 +68,6 @@ public class TermService {
             term.setTerm(obj.getString("term"));
             term.setTermEn(obj.getString("termEn"));
             term.setDefinition(obj.getString("definition"));
-
             list.add(term);
         }
 

@@ -136,7 +136,8 @@ public class DocumentsServiceImpl extends ServiceImpl<DocumentsMapper, Documents
             doc.setImplementDate(obj.getString("implementDate"));
             doc.setDomain(obj.getString("domain"));
             doc.setOffset(obj.getInteger("offset"));
-
+            doc.setPeople(obj.getString("people"));
+            //doc.setChange(obj.getString("change"));
             list.add(doc);
         }
 

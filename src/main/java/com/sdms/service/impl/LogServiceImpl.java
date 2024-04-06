@@ -17,5 +17,12 @@ import java.util.HashMap;
 @Service
 public class LogServiceImpl extends ServiceImpl<LogMapper,Logs> implements LogService
 {
-
+    public QueryWrapper<Logs> makeQuery(ArrayList<String> date)
+    {
+        QueryWrapper<Logs> queryWrapper = new QueryWrapper<>();
+        if (date.size() > 1) {
+            queryWrapper.and(wrapper -> wrapper.between("dotime", date.get(0), date.get(1)));//根据操作时间dotime查询
+        }
+        return queryWrapper;
+    }
 }

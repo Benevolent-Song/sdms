@@ -40,25 +40,25 @@ public class FileController {
     @Autowired
     private DocumentsService doc;
 
-
+    //实现上传文件功能,pid是前端生成的传递给后端
     @PostMapping("/uploadFile/{pid}")
-    public Result fileUpload(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws IOException {
-
+    public Result fileUpload(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws IOException
+    {
+        //@RequestParam("file")表示在请求参数中查找名为file的参数。MultipartFile file用于接收文件
         if (file.isEmpty()) {
             return Result.fail("空文件！");
         }
         // 文件名
-        String fileName = file.getOriginalFilename();
-        String suffixName = fileName.substring(fileName.lastIndexOf("."));
+        String fileName = file.getOriginalFilename();//获得上传时的文件名称
+        String suffixName = fileName.substring(fileName.lastIndexOf("."));//获取文件的后缀名
         log.info("上传文件名称为:{}, 后缀名为:{}!", fileName, suffixName);
 
         if (!suffixName.equals(".pdf")) {
             return Result.fail("文件类型不符!");
         }
-        pid=pdfToJsonUtil.getUUID();//生成uuid(自己后面添加的)
         String newName = pid + ".pdf";
-        String pathName = uploadFilePath + "/" + newName;
-        File fileTempObj = new File(pathName);
+        String pathName = uploadFilePath + "/" + newName;//保存到本地的路径
+        File fileTempObj = new File(pathName);//按照上面的路径创建文件
         // 检测目录是否存在
         if (!fileTempObj.getParentFile().exists()) {
             fileTempObj.getParentFile().mkdirs();
@@ -67,28 +67,26 @@ public class FileController {
         if (fileTempObj.exists()) {
             return Result.fail("文件已经存在!");
         }
-
         try
         {
-             // 写入文件:方式1
-             //file.transferTo(fileTempObj);
-             // 写入文件:方式2
-             FileUtil.writeBytes(file.getBytes(), fileTempObj);
+             FileUtil.writeBytes(file.getBytes(), fileTempObj);//读取pdf文件到fileTempObj(相当复制为fileTempObj(/uploadFile/newName.pdf))
         } catch (Exception e) {
             log.error("发生错误: {}", e);
             return Result.fail(e.getMessage());
         }
-
         //实现直接上传文件的功能
-        JSONObject obj = pdfToJsonUtil.parsePdf(pathName, pid);//将pdf转换为json格式
+        JSONObject obj = pdfToJsonUtil.parsePdf(pathName, pid);//使用tika.py将刚才上传的pdf文件转换成json文本
         String fileName1=uploadFilePath+"/text/"+pid+".txt";//要保存的文件路径
-        writeDataToFile(obj, fileName1);//将json数据写入到指定的text文件中
-        File objs = new File(fileName1);//读取文件
+        writeDataToFile(obj, fileName1);//将数据写入到指定的text文件中
+        File objs = new File(fileName1);//创建文件
         MultipartFile multipartFile = convertFileToMultipartFile(objs);//将文件转换为MultipartFile格式
         JSONObject object = pdfToJsonUtil.parseJson(multipartFile);//解析json格式文件
-        if (doc.save(pdfToJsonUtil.createDocument(object, pid))) //写入mysql中
+        if (doc.save(pdfToJsonUtil.createDocument(object, pid)))
+        //pdfToJsonUtil.createDocument()来解析json对象，将元数据取出，返回一个Documents对象使用doc.save()写入mysql中
         {
-            if (esService.parseObject(object, pid))//写入es中
+            if (esService.parseObject(object, pid))
+            //!!!esService.parseObject()解析json对象,将文本根据chapter分成一段段,最后一次性提交,在函数中直接将内容写入es的sdms索引中
+            // 该功能在点击“文本”按键所显示的内容,必须在在网页上传才能显示内容
             {
                 return Result.success("解析文件成功！pid:" + pid);
             }

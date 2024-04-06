@@ -35,21 +35,25 @@ public class Documents implements Serializable {
     /**
      * es文档id
      */
+    @TableField("pid")
     private String pid;
 
     /**
      * 存放路径
      */
+    @TableField("path")
     private String path;
 
     /**
      * 类型
      */
+    @TableField("category")
     private String category;
 
     /**
      * 编号
      */
+    @TableField("number")
     private String number;
 
     /**
@@ -86,12 +90,19 @@ public class Documents implements Serializable {
     /**
      * 分类
      */
+    @TableField("domain")
     private String domain;
 
     /**
      * 偏离页数
      */
+    @TableField("offset")
     private Integer offset;
 
+    //为了从前端读取当前登陆的用户信息才设的字段
+    @TableField("people")
+    private String people;
 
+    @TableField("whatchange")
+    private String whatchange;
 }

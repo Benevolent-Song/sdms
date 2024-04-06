@@ -59,7 +59,7 @@ public class ImageService {
         for (int i = 0; i < array.size(); i++) {
             JSONObject obj = array.getJSONObject(i);
             Image image = new Image();
-            image.setId(pdfToJsonUtil.getUUID());
+            image.setId(obj.getString("id"));
             image.setTitle(obj.getString("title"));
             image.setChapter(obj.getString("chapter"));
             image.setPage(obj.getInteger("page"));
@@ -151,10 +151,11 @@ public class ImageService {
 
     public Boolean downloadFile(HttpServletResponse response, String filePath) {
         File file = new File(imagePath + filePath);
+        System.out.println(file.exists());
         if (file.exists()) {
             try {
-                FileInputStream fileInputStream = new FileInputStream(file);
 
+                FileInputStream fileInputStream = new FileInputStream(file);
                 response.setHeader("content-disposition", "attachment;fileName=" + URLEncoder.encode(filePath, "UTF-8"));
                 ServletOutputStream outputStream = response.getOutputStream();
 

@@ -1,5 +1,4 @@
 package com.sdms.service;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -7,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sdms.entity.Documents;
 import com.sdms.entity.EsDoc;
 import com.sdms.common.dto.QueryForm;
+import com.sdms.entity.Term;
 import com.sdms.mapper.DocumentsMapper;
 import com.sdms.util.PdfToJsonUtil;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 @Service
 public class EsService {
 
@@ -83,6 +82,7 @@ public class EsService {
             }
         }
         return doSearch(queryBuilder, pageIndex, pageSize);
+        //!!!返回了部分mysql中查询的信息("titleCn","number","page2"),放回到响应中
     }
 
     // 多条件查询
@@ -125,7 +125,7 @@ public class EsService {
         sdms.source(searchSourceBuilder);
         SearchResponse searchResponse = restHighLevelClient.search(sdms, RequestOptions.DEFAULT);
         // 解析结果
-        SearchHits hits = searchResponse.getHits();
+        SearchHits hits = searchResponse.getHits();//提取es请求中的hit中的内容
         String totalHits = hits.getTotalHits().toString().split(" ")[0];
         List<Map<String,Object>> results = new ArrayList<>();
         for (SearchHit documentFields : hits.getHits()) {
@@ -161,7 +161,7 @@ public class EsService {
                 Text[] fragments = text.fragments();
                 StringBuilder new_name = new StringBuilder();
                 for (Text str : fragments) {
-                    new_name.append(str);
+                    new_name. append(str);
                 }
                 sourceAsMap.put("text",new_name.toString());
             }
@@ -176,7 +176,36 @@ public class EsService {
 
         return res;
     }
+    public Boolean parsemyjson(JSONObject jsonObject)throws IOException
+    {
+        JSONArray array = jsonObject.getJSONArray("content");//json文件的开头,后面跟着的才是json数据
 
+        ArrayList<EsDoc> list = new ArrayList<>();
+
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            EsDoc doc = new EsDoc();
+            doc.setPid(obj.getString("pid"));//设置为文档中设定的pid值
+            doc.setChapter(obj.getString("chapter"));
+            doc.setPage(obj.getString("page"));
+            doc.setText(obj.getString("text"));
+            doc.setId(obj.getString("id"));//设定为文档中设定的id值
+            list.add(doc);
+        }
+
+        BulkRequest bulkRequest = new BulkRequest();
+        bulkRequest.timeout("10s");
+        for (EsDoc doc : list) {
+            bulkRequest.add(
+                    new IndexRequest(ES_INDEX)
+                            .id(doc.getId())
+                            .source(JSON.toJSONString(doc), XContentType.JSON)
+            );
+        }
+        BulkResponse bulk = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+
+        return !bulk.hasFailures();
+    }
     // 解析json对象，将内容写入es
     public Boolean parseObject(JSONObject jsonObject, String pid) throws IOException {
 
@@ -238,7 +267,7 @@ public class EsService {
 
     public Map<String,Object> selectList(String pid) throws IOException {
 
-        MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("pid", pid);
+        MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("pid", pid);//设置查询的条件
         SearchRequest sr = new SearchRequest(ES_INDEX);
         // 创建搜索源建造者对象
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();

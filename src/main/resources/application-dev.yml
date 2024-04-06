@@ -35,8 +35,9 @@ server:
 filepath:
   py:
     path: D:/data/result/tika.py
+  #存放的处理过程中的文本,没有其它作用
   txt:
-    path: D:/data/result/upload/text/
+    path: D:/data/result/upload/text
   pdf:
     path: D:/data/result/upload
   image:

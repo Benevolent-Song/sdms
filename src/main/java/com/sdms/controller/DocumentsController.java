@@ -16,14 +16,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -87,9 +86,7 @@ public class DocumentsController {
 
     @CrossOrigin
     @PostMapping("/update")
-    public Result updateDocument(@RequestBody Documents document,HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        System.err.println(cookies);
+    public Result updateDocument(@RequestBody Documents document) {
         if (documentsService.updateById(document)) {
             Logs logs=new Logs();
             LocalDateTime now = LocalDateTime.now();//获取当前时间
@@ -99,17 +96,16 @@ public class DocumentsController {
             logs.setTitleCn(document.getTitleCn());
             logs.setNumber(document.getNumber());
             logs.setDoclass("更改文档");
-            logs.setPeople("root");//人员
-            //logs.setWhatdo("");//操作的内容
+            logs.setPeople(document.getPeople());//人员
+            logs.setWhatdo(document.getWhatchange());//操作的内容
             logService.saveOrUpdate(logs);
             return Result.success("修改成功");
         }
         return Result.fail("修改失败");
     }
 
-
-    @PostMapping("/delete/{id}")
-    public Result deleteDocument(@PathVariable Integer id) throws IOException {
+    @PostMapping("/delete/{id}/{user}")
+    public Result deleteDocument(@PathVariable Integer id,@PathVariable String user) throws IOException {
 
         Documents doc = documentsService.getById(id);
         String fileName = doc.getPid();
@@ -125,10 +121,12 @@ public class DocumentsController {
             logs.setTitleCn(doc.getTitleCn());
             logs.setNumber(doc.getNumber());
             logs.setDoclass("删除文档");
-            logs.setPeople("root");//人员
-            //logs.setWhatdo("");//操作的内容
+            logs.setPeople(user);//人员
             logService.saveOrUpdate(logs);
-            return Result.success("删除成功");
+            if (documentsService.removeById(id))
+            {
+                return Result.success("删除成功");
+            }
         }
         return Result.fail("删除失败");
     }
@@ -138,8 +136,6 @@ public class DocumentsController {
 
         JSONObject object = pdfToJsonUtil.parseJson(file);
         ArrayList<Documents> list = documentsService.parseObject(object);
-        //System.err.println("file:"+file);
-        //System.err.println("object:"+object);
         if(documentsService.saveBatch(list)) {
             return Result.success("添加成功");
         }

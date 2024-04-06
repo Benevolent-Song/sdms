@@ -24,9 +24,9 @@ public class Image implements Serializable {
 
     private String chapter;
 
-    private Integer page;
+    private Integer page;//页数
 
-    private Integer page2;
+    private Integer page2;//章节数
 
     private String name;
 
