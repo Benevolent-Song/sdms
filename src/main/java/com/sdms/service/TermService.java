@@ -53,14 +53,14 @@ public class TermService {
 
     public Boolean parseObject(JSONObject jsonObject) throws IOException {
 
-        JSONArray array = jsonObject.getJSONArray("terms");
+        JSONArray array = jsonObject.getJSONArray("content");
 
         ArrayList<Term> list = new ArrayList<>();
 
         for (int i = 0; i < array.size(); i++) {
             JSONObject obj = array.getJSONObject(i);
             Term term = new Term();
-            term.setId(pdfToJsonUtil.getUUID());
+            term.setId(obj.getString("id"));
             term.setPid(obj.getString("pid"));
             term.setChapter(obj.getString("chapter"));
             term.setPage(obj.getString("page"));

@@ -25,11 +25,9 @@ public class TermController {
     public Result parse(@RequestParam("file") MultipartFile file) throws IOException {
 
         JSONObject object = pdfToJsonUtil.parseJson(file);
-
         if (termService.parseObject(object)) {
             return Result.success("解析json文件成功！");
         }
-
         return Result.fail("解析json文件失败！");
     }
 
