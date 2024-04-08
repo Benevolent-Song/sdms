@@ -9,8 +9,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.sdms</groupId>
-    <artifactId>server</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>sdms</artifactId>
+    <version>service</version>
     <name>sdms</name>
     <description>sdms</description>
     <properties>
