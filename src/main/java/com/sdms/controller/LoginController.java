@@ -58,5 +58,11 @@ public class LoginController {
         SecurityUtils.getSubject().logout();
         return Result.success("注销成功！");
     }
+
+    //微信验证文件校验
+    @GetMapping("/cdXl0P9ZpS.txt")
+    public String check() {
+        return "8d2c7fde32e15a2f92258b6c108a90b9";
+    }
 }
 

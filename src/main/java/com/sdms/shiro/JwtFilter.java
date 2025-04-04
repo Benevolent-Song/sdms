@@ -1,6 +1,5 @@
 package com.sdms.shiro;
 
-import com.sdms.shiro.JwtToken;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,7 +38,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
-//        System.out.println("isLoginAttempt");
+//      System.out.println("isLoginAttempt");
         HttpServletRequest req= (HttpServletRequest) request;
         String token=req.getHeader("Authorization");
         return token != null;

@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: ware-jwt-token
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/sdms?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 882020
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+  data:
+    neo4j:
+      uri: bolt://neo4j:7687
+      username: neo4j
+      password: 882020
+  main:
+    allow-bean-definition-overriding: true
+  resources:
+    static-locations: classpath:/,file:src/main/resources/static/
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**Mapper.xml
+
+server:
+  port: 8081
+  address: 0.0.0.0
+  ssl:
+    # 证书文件名
+    key-store: classpath:sdms.chat.pfx
+    # 证书密钥别名
+    key-alias: sdms.chat
+    # 证书格式
+    key-store-type: PKCS12
+    # 密钥口令
+    key-store-password: 3lsv70d2p4
+
+# 文件存放位置
+filepath:
+  txt:
+    path: /app/upload-data
+  pdf:
+    path: /app/upload-data
+  py:
+    path: /app/tika-data/tika.py
+  image:
+    path: /app/images-data
+  graph:
+    path: /app/images-data
+
+# 自动化处理版本文件存放位置
+file:
+  output-dir: /app/upload-data
+  term-dir: /app/term-data
+  picture-dir: /app/images-data
+
+tess4j:
+  datapath: D:/Download/Tesseract/tessdata  # Tesseract训练数据路径
+  language: chi_sim+eng  # 中英文混合识别
+
+minio:
+  access-key: li5fasdfaeWFR344W2
+  secret-key: p4VIZ23948ASDFJAjasdif2UFSDFc9b
+  url: http://169.254.19.42:9000
+  bucket-name: sdms_file

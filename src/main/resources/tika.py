@@ -1,5 +1,5 @@
 # coding=utf-8
-
+# 它不是java的tika库,只是叫tika,只是一个使用正则化处理txt文件文我们想要格式的json格式数据
 import json
 import re
 

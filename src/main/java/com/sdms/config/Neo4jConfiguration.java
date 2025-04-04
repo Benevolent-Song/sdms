@@ -1,7 +1,6 @@
 package com.sdms.config;
 
 import org.neo4j.ogm.session.SessionFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
@@ -14,8 +13,8 @@ public class Neo4jConfiguration {
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
         return new org.neo4j.ogm.config.Configuration.Builder()
-                .uri("bolt://localhost:7687")
-                .credentials("neo4j", "88202093")
+                .uri("bolt://neo4j:7687")//如果是本地运行则改写为localhost
+                .credentials("neo4j", "882020")
                 .build();
     }
 

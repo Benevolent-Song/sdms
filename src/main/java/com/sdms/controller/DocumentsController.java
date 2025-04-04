@@ -1,4 +1,5 @@
 package com.sdms.controller;
+
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -16,23 +17,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 
-/**
- * <p>
- *  前端控制器
- * </p>
- *
- * @author LSY
- * @since 2022-04-25
- */
+
 @RestController
 @RequestMapping("/docs")
 public class DocumentsController {
@@ -51,8 +45,8 @@ public class DocumentsController {
 
     @GetMapping("/queryAll")
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-
-        Page<Documents> page = new Page<>(currentPage, 10);
+        //必须要先在配置类创建拦截器,在分页时实现追加limit语句的能力,不添加始终返回全部数据
+        Page<Documents> page = new Page<>(currentPage, 10);//当前页数,返回10条(相当于limit currentPage*10,10)从第currentPage*10开始取10条数据
         IPage<Documents> pageData = documentsService.page(page, new QueryWrapper<Documents>().orderByDesc("id"));
 
         return Result.success(pageData);

@@ -33,4 +33,11 @@ public interface DocumentRepository extends Neo4jRepository<DocumentEntity, Long
     @Query("match (n:`术语`)-[r:`来源于`]-(m:`标准`) where n.`术语名` = {term} return n,r,m limit 25")
     List<Map<String, Object>> queryProperty(@Param("term") String term);
 
+    @Query("MATCH (n) OPTIONAL MATCH (n)-[r]-() RETURN n, collect(r) as relationships LIMIT 10000")
+    List<Map<String, Object>> findAllNodes();
+
+    @Query("MATCH (d)-[r]-(related) " +
+            "WHERE d.id CONTAINS $idName " +  // idName 是部分字符串
+            "RETURN d, r, related")
+    List<Map<String, Object>> findDocumentWithRelationships(@Param("idName") String idName);
 }

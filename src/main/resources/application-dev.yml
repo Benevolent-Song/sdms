@@ -6,19 +6,22 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/sdms?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: 882020
+    password: 88202093
     #123456
   servlet:
     multipart:
       enabled: true
       max-file-size: 100MB
       max-request-size: 100MB
+  resources:
+    static-locations: classpath:/,file:src/main/resources/static/
 
   data:
     neo4j:
       uri: bolt://localhost:7687
       username: neo4j
       password: 88202093
+      #密码在客户端bean即src/main/java/com/sdms/config/Neo4jConfiguration.java中也要修改
   main:
     allow-bean-definition-overriding: true
 
@@ -31,17 +34,31 @@ mybatis-plus:
 server:
   port: 8081
 
-# 文件存放位置(一定不能包含中文,会报错)
+# 原始版本文件存放位置(一定不能包含中文,会报错)
 filepath:
   py:
-    path: D:/data/result/tika.py
-  #存放的处理过程中的文本,没有其它作用
+    path: D:/Download/sdms-data/tika.py
   txt:
-    path: D:/data/result/upload/text
+    path: C:/Users/seabiscuit/Desktop/resource/document
   pdf:
-    path: D:/data/result/upload
+    path: C:/Users/seabiscuit/Desktop/resource/document
   image:
-    path: D:/data/result/images
+    path: C:/Users/seabiscuit/Desktop/resource/picture
   graph:
-    path: D:/data/result/temp/
+    path: C:/Users/seabiscuit/Desktop/resource/picture
 
+# 自动化处理版本文件存放位置
+file:
+  output-dir: C:/Users/seabiscuit/Desktop/resource/document
+  term-dir: C:/Users/seabiscuit/Desktop/resource/term/
+  picture-dir: C:/Users/seabiscuit/Desktop/resource/picture
+
+tess4j:
+  datapath: D:/Download/Tesseract/tessdata  # Tesseract训练数据路径
+  language: chi_sim+eng  # 中英文混合识别
+
+minio:
+  access-key: root
+  secret-key: 88202093
+  url: http://localhost:9005
+  bucket-name: sdms-pdf

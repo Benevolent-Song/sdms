@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @MapperScan("com.sdms.mapper")
 public class MybatisPlusConfig {
+    //创建拦截器,在分页时实现追加limit语句的能力,不添加始终返回全部数据
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();

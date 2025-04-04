@@ -61,6 +61,7 @@ public class ImageService {
             Image image = new Image();
             image.setId(obj.getString("id"));
             image.setTitle(obj.getString("title"));
+            image.setPid(obj.getString("pid"));
             image.setChapter(obj.getString("chapter"));
             image.setPage(obj.getInteger("page"));
             image.setPage2(obj.getInteger("page2"));

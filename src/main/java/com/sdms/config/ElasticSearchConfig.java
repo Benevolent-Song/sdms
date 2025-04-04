@@ -6,15 +6,17 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration//内部也有@Component注解,所以也可以实现类的注入
 public class ElasticSearchConfig {
-    //以客户端方式操作ES,这里创建ES客户端
+
+    //将第三方库的类或方法(不是用户定义的)交给spring管理,可以用@Autowired创建实例
+    //@Configuration+@Bean共同才能实现
     @Bean
     public RestHighLevelClient restHighLevelClient(){
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("127.0.0.1",9200,"http")
-                        //创建索引通过的在postman中使用POST /sdms/_mapping指令 + json文件建立的。
+                        new HttpHost("es",9200,"http")
+                        //在本地部署使用localhost
                 )
         );
         return client;

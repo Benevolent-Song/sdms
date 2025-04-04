@@ -1,12 +1,12 @@
 package com.sdms.service;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sdms.common.dto.QueryForm;
 import com.sdms.entity.Documents;
 import com.sdms.entity.EsDoc;
-import com.sdms.common.dto.QueryForm;
-import com.sdms.entity.Term;
 import com.sdms.mapper.DocumentsMapper;
 import com.sdms.util.PdfToJsonUtil;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -24,7 +24,11 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -32,7 +36,6 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.io.IOException;
 import java.util.*;
@@ -303,45 +306,16 @@ public class EsService {
 
     }
 
-    // 根据pid批量删除对应文件所有的文档
+    // 根据pid批量删除sdms索引所有的文档
     public Boolean deleteBatch(String pid) throws IOException {
-        // 1.创建查询请求对象
-        SearchRequest searchRequest = new SearchRequest(ES_INDEX);//构建SearchRequest请求对象，指定索引库
-        // 2.构建搜索条件
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        // 匹配查询
-        MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("pid",pid);
-
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
-        // (3)条件投入
-        searchSourceBuilder.query(matchQueryBuilder);
-        searchSourceBuilder.size(10000);
-        // 3.添加条件到请求
-        searchRequest.source(searchSourceBuilder);
-        // 4.客户端查询请求
-        SearchResponse search = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        // 5.查看返回结果
-        SearchHits hits = search.getHits();
-        // 将结果中的hits取出
-        String h = JSON.toJSONString(hits);
-        JSONObject j = JSONObject.parseObject(h);
-        JSONArray arr = j.getJSONArray("hits");
-        // 取出hits列表中所有的id
-        ArrayList<String> list = new ArrayList<>();
-        for (Object o : arr) {
-            JSONObject hit = (JSONObject) o;
-            list.add(hit.getString("id"));
-        }
-
-        DeleteRequest request = new DeleteRequest(ES_INDEX);
-        for (String s : list) {
-            request.id(s);
-            request.timeout("1s");
-            restHighLevelClient.delete(request, RequestOptions.DEFAULT);
-        }
-
+        DeleteByQueryRequest request = new DeleteByQueryRequest("sdms", "images", "term");
+        request.setQuery(QueryBuilders.termQuery("pid.keyword",pid));
+        request.setBatchSize(1000);  // 每批次删除1000条
+        request.setConflicts("proceed");
+        restHighLevelClient.deleteByQuery(request, RequestOptions.DEFAULT);
         return true;
     }
+
 
     // 更新单个文档
     public Boolean updateEsDoc(EsDoc esDoc) throws IOException {

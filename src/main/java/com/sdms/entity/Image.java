@@ -18,6 +18,8 @@ public class Image implements Serializable {
     @Id
     private String id;
 
+    private String pid;
+
     private String title;
 
     private String number;

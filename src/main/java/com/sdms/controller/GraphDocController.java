@@ -3,11 +3,14 @@ package com.sdms.controller;
 import com.sdms.common.lang.Result;
 import com.sdms.graph_entity.DocumentEntity;
 import com.sdms.graph_service.DocumentService;
+import com.sdms.repository.DocumentRepository;
 import com.sdms.util.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -18,21 +21,30 @@ public class GraphDocController {
     DocumentService documentService;
     @Autowired
     FileHandler fileHandler;
+    @Autowired
+    DocumentRepository documentRepository;
 
-    @PostMapping("/get_node")
-    public Result getNode(@RequestParam("number") String number) {
+//    @PostMapping("/get_node")
+//    public Result getNode(@RequestParam("number") String number) {
+//
+//        return Result.success(documentService.queryNode(number));
+//
+//    }
 
-        return Result.success(documentService.queryNode(number));
-
-    }
-
+    // 新增返回所有节点
     @PostMapping("/get_all")
     public Result getAll() {
 
-        Iterable<DocumentEntity> doc = documentService.getAll();
+        List<Map<String, Object>> allNodes = documentRepository.findAllNodes();
+        //Iterable<DocumentEntity> doc = documentService.getAll();
+        return Result.success(allNodes);
 
-        return Result.success(doc);
+    }
 
+    // 新增查询返回某一节点
+    @PostMapping("/getNode/{idName}")
+    public Result getNode(@PathVariable("idName") String idName) {
+        return Result.success(documentRepository.findDocumentWithRelationships(idName));
     }
 
     @PostMapping("/save")
